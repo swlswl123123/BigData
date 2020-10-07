@@ -7,8 +7,8 @@ arg_age = data(:,6);
 f1 = figure(1);
 histfit(arg_age);
 [mu,sigma] = normfit(arg_age);
-set(get(gca, 'XLabel'), 'String', 'age', 'fontsize', 16);
-set(get(gca, 'YLabel'), 'String', 'N', 'fontsize', 16);
+set(gca, 'yticklabel',{'0.000','0.025','0.050','0.075','0.100'});
+set(get(gca, 'XLabel'), 'String', '平均年龄', 'fontsize', 16);
 set(gca, 'FontSize', 16);
 print(f1,'-dpng','-r300','./image/pdf_arg_age.png');
 
@@ -35,15 +35,27 @@ for i = 1:5
     variance(i) = sqrt(sum((g-g_mean).^2)/(size(g,1)-1));
     subplot(2,5,i)
     histfit(g);
+    switch i
+    case 1
+        set(gca, 'yticklabel',{'0.00','0.02','0.04','0.06','0.08','0.10','0.12'});
+    case 2
+        set(gca, 'yticklabel',{'0.00','0.03','0.07','0.10','0.13'});
+    case 3
+        set(gca, 'yticklabel',{'0.00','0.05','0.10','0.15','0.20'});
+    case 4
+        set(gca, 'yticklabel',{'0.00','0.02','0.05','0.07','0.09','0.12','0.14'});
+    case 5
+        set(gca, 'yticklabel',{'0.00','0.03','0.06','0.09','0.13','0.16','0.19'});
+    end
     [mu,sigma] = normfit(g);
     set(get(gca, 'Title'), 'String', ['category:', num2str(i)]);
-    set(gca, 'FontSize', 20);
+    set(gca, 'FontSize', 22);
     hold on;
     subplot(2,5,i+5)
     pd = makedist('Normal','mu',mu,'sigma',sigma);
     qqplot(g, pd);
     set(get(gca, 'XLabel'), 'String', '拟合正态分位数');
-    set(gca, 'FontSize', 20);
+    set(gca, 'FontSize', 22);
     [h,p,~,c] = kstest(g,'CDF',pd,'Alpha',0.05);
 end 
 
@@ -60,15 +72,15 @@ F_total = tbl{2,5}
 SIZE = get(0,'ScreenSize');	% 获取显示屏的像素尺寸
 f6 = figure(6);				% 创建图形窗口
 set(f6, 'position', SIZE);	% 设置图形窗口位置尺寸为屏幕大小
-sel_set = {2,5,7};
+sel_set = {3,5,7};
 sel_name = {'消息数','性别比','年龄差'};
 
 for i = 1:3
 
 
     factor = data(:,sel_set{i});
-    factor(factor==0) = 0.02;
-    factor = log(factor);
+    % factor(factor==0) = 0.02;
+    % factor = log(factor);
 
     factor_var = zeros(5,1);
     for k = 1:5
@@ -83,14 +95,19 @@ for i = 1:3
     subplot(2,3,i)
     histfit(factor);
     [mu,sigma] = normfit(factor);
+    if i ~= 1
+        yticks([0,41,82,122,163,204,245,286])
+        set(gca, 'yticklabel',{'0.00','0.02','0.04','0.06','0.08','0.10','0.12','0.14'});
+    else
+        set(gca, 'yticklabel',{'0.00','0.25','0.50','0.75','1.00'});
+    end
     set(get(gca, 'XLabel'), 'String', sel_name{i});
-    set(get(gca, 'YLabel'), 'String', 'N');
-    set(gca, 'FontSize', 20);
+    set(gca, 'FontSize', 22);
     subplot(2,3,i+3)
     pd = makedist('Normal','mu',mu,'sigma',sigma);
     qqplot(factor, pd);
     set(get(gca, 'XLabel'), 'String', '拟合正态分位数');
-    set(gca, 'FontSize', 20);
+    set(gca, 'FontSize', 22);
     % ks-test
     [h,p,~,c] = kstest(factor,'CDF',pd,'Alpha',0.05);
 
