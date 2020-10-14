@@ -80,7 +80,7 @@ f4 = figure(4)
 boxplot(arg_age,category,'Labels',{'类别1','类别2','类别3','类别4','类别5'})
 set(get(gca, 'XLabel'), 'String', '群组类别');
 set(get(gca, 'YLabel'), 'String', '平均年龄');
-set(gca, 'FontSize', 22)
+set(gca, 'FontSize', 16)
 print(f4,'-dpng','-r300','./image/arg_age_boxplot.png');
 F_total = tbl{2,5}
 
