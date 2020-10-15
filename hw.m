@@ -5,17 +5,22 @@ data = data(:,2:end);
 arg_age = data(:,6);
 
 f1 = figure(1);
-histfit(arg_age);
+% histfit(arg_age);
 [mu,sigma] = normfit(arg_age);
-set(gca, 'yticklabel',{'0.000','0.025','0.050','0.075','0.100'});
-set(get(gca, 'XLabel'), 'String', 'å¹³å‡å¹´é¾„', 'fontsize', 16);
+x = min(arg_age) : 0.01 : max(arg_age);
+histogram(arg_age, 'Normalization', 'pdf');
+hold on;
+plot(x, normpdf(x,mu,sigma), '--', 'linewidth',2);
+% set(gca, 'yticklabel',{'0.000','0.025','0.050','0.075','0.100'});
+set(get(gca, 'XLabel'), 'String', 'Æ½¾ùÄêÁä', 'fontsize', 16);
+set(get(gca, 'YLabel'), 'String', '¸ÅÂÊÃÜ¶È', 'fontsize', 16);
 set(gca, 'FontSize', 16);
 print(f1,'-dpng','-r300','./image/pdf_arg_age.png');
 
 f2 = figure(2);
 pd = makedist('Normal','mu',mu,'sigma',sigma);
 qqplot(arg_age, pd);
-set(get(gca, 'XLabel'), 'String', 'æ‹Ÿåˆæ­£æ€åˆ†ä½æ•°');
+set(get(gca, 'XLabel'), 'String', 'ÄâºÏÕıÌ¬·ÖÎ»Êı');
 set(gca, 'FontSize', 16);
 print(f2,'-dpng','-r300','./image/qq_arg_age.png');
 
@@ -26,35 +31,40 @@ print(f2,'-dpng','-r300','./image/qq_arg_age.png');
 
 variance = zeros(5,1);
 
-SIZE = get(0,'ScreenSize');	% è·å–æ˜¾ç¤ºå±çš„åƒç´ å°ºå¯¸
-f3 = figure(3);				% åˆ›å»ºå›¾å½¢çª—å£
-set(f3, 'position', SIZE);	% è®¾ç½®å›¾å½¢çª—å£ä½ç½®å°ºå¯¸ä¸ºå±å¹•å¤§å°
+SIZE = get(0,'ScreenSize');	% »ñÈ¡ÏÔÊ¾ÆÁµÄÏñËØ³ß´ç
+f3 = figure(3);				% ´´½¨Í¼ĞÎ´°¿Ú
+set(f3, 'position', SIZE);	% ÉèÖÃÍ¼ĞÎ´°¿ÚÎ»ÖÃ³ß´çÎªÆÁÄ»´óĞ¡
 for i = 1:5
     g = arg_age(data(:,1)==i);
     g_mean = sum(g)/size(g,1);
     variance(i) = sqrt(sum((g-g_mean).^2)/(size(g,1)-1));
     subplot(2,5,i)
-    histfit(g);
-    switch i
-    case 1
-        set(gca, 'yticklabel',{'0.00','0.02','0.04','0.06','0.08','0.10','0.12'});
-    case 2
-        set(gca, 'yticklabel',{'0.00','0.03','0.07','0.10','0.13'});
-    case 3
-        set(gca, 'yticklabel',{'0.00','0.05','0.10','0.15','0.20'});
-    case 4
-        set(gca, 'yticklabel',{'0.00','0.02','0.05','0.07','0.09','0.12','0.14'});
-    case 5
-        set(gca, 'yticklabel',{'0.00','0.03','0.06','0.09','0.13','0.16','0.19'});
-    end
+    % histfit(g);
+    % switch i
+    % case 1
+    %     set(gca, 'yticklabel',{'0.00','0.02','0.04','0.06','0.08','0.10','0.12'});
+    % case 2
+    %     set(gca, 'yticklabel',{'0.00','0.03','0.07','0.10','0.13'});
+    % case 3
+    %     set(gca, 'yticklabel',{'0.00','0.05','0.10','0.15','0.20'});
+    % case 4
+    %     set(gca, 'yticklabel',{'0.00','0.02','0.05','0.07','0.09','0.12','0.14'});
+    % case 5
+    %     set(gca, 'yticklabel',{'0.00','0.03','0.06','0.09','0.13','0.16','0.19'});
+    % end
     [mu,sigma] = normfit(g);
+    x = mu-3*sigma : 0.1 : mu + 3*sigma;
+    histogram(g, 'Normalization', 'pdf');
+    hold on;
+    plot(x, normpdf(x,mu,sigma), '--', 'linewidth',2);
+
     set(get(gca, 'Title'), 'String', ['category:', num2str(i)]);
     set(gca, 'FontSize', 22);
     hold on;
     subplot(2,5,i+5)
     pd = makedist('Normal','mu',mu,'sigma',sigma);
     qqplot(g, pd);
-    set(get(gca, 'XLabel'), 'String', 'æ‹Ÿåˆæ­£æ€åˆ†ä½æ•°');
+    set(get(gca, 'XLabel'), 'String', 'ÄâºÏÕıÌ¬·ÖÎ»Êı');
     set(gca, 'FontSize', 22);
     [h,p,~,c] = kstest(g,'CDF',pd,'Alpha',0.05);
 end 
@@ -66,14 +76,20 @@ variance
 % ANOVA
 category = data(:,1);
 [p,tbl] = anova1(arg_age,category,'off');
+f4 = figure(4)
+boxplot(arg_age,category,'Labels',{'Àà±ğ1','Àà±ğ2','Àà±ğ3','Àà±ğ4','Àà±ğ5'})
+set(get(gca, 'XLabel'), 'String', 'Èº×éÀà±ğ');
+set(get(gca, 'YLabel'), 'String', 'Æ½¾ùÄêÁä');
+set(gca, 'FontSize', 22)
+print(f4,'-dpng','-r300','./image/arg_age_boxplot.png');
 F_total = tbl{2,5}
 
 %other factor
-SIZE = get(0,'ScreenSize');	% è·å–æ˜¾ç¤ºå±çš„åƒç´ å°ºå¯¸
-f6 = figure(6);				% åˆ›å»ºå›¾å½¢çª—å£
-set(f6, 'position', SIZE);	% è®¾ç½®å›¾å½¢çª—å£ä½ç½®å°ºå¯¸ä¸ºå±å¹•å¤§å°
+SIZE = get(0,'ScreenSize');	% »ñÈ¡ÏÔÊ¾ÆÁµÄÏñËØ³ß´ç
+f5 = figure(5);				% ´´½¨Í¼ĞÎ´°¿Ú
+set(f5, 'position', SIZE);	% ÉèÖÃÍ¼ĞÎ´°¿ÚÎ»ÖÃ³ß´çÎªÆÁÄ»´óĞ¡
 sel_set = {3,5,7};
-sel_name = {'æ¶ˆæ¯æ•°','æ€§åˆ«æ¯”','å¹´é¾„å·®'};
+sel_name = {'ÏûÏ¢Êı','ĞÔ±ğ±È','ÄêÁä²î'};
 
 for i = 1:3
 
@@ -93,32 +109,48 @@ for i = 1:3
     min_factor_var = min(factor_var)
 
     subplot(2,3,i)
-    histfit(factor);
+    % histfit(factor);
     [mu,sigma] = normfit(factor);
-    if i ~= 1
-        yticks([0,41,82,122,163,204,245,286])
-        set(gca, 'yticklabel',{'0.00','0.02','0.04','0.06','0.08','0.10','0.12','0.14'});
-    else
-        set(gca, 'yticklabel',{'0.00','0.25','0.50','0.75','1.00'});
-    end
+    x = mu - 3*sigma : 0.01 : mu + 3*sigma;
+    histogram(factor, 'Normalization', 'pdf');
+    hold on;
+    plot(x, normpdf(x,mu,sigma), '--', 'linewidth',2);
+    % if i ~= 1
+    %     yticks([0,41,82,122,163,204,245,286])
+    %     set(gca, 'yticklabel',{'0.00','0.02','0.04','0.06','0.08','0.10','0.12','0.14'});
+    % else
+    %     set(gca, 'yticklabel',{'0.00','0.25','0.50','0.75','1.00'});
+    % end
+
     set(get(gca, 'XLabel'), 'String', sel_name{i});
     set(gca, 'FontSize', 22);
     subplot(2,3,i+3)
     pd = makedist('Normal','mu',mu,'sigma',sigma);
     qqplot(factor, pd);
-    set(get(gca, 'XLabel'), 'String', 'æ‹Ÿåˆæ­£æ€åˆ†ä½æ•°');
+    set(get(gca, 'XLabel'), 'String', 'ÄâºÏÕıÌ¬·ÖÎ»Êı');
     set(gca, 'FontSize', 22);
     % ks-test
     [h,p,~,c] = kstest(factor,'CDF',pd,'Alpha',0.05);
 
 end
-print(f6,'-dpng','-r300','./image/factor_analysis.png');
+print(f5,'-dpng','-r300','./image/factor_analysis.png');
+
+SIZE = get(0,'ScreenSize');	% »ñÈ¡ÏÔÊ¾ÆÁµÄÏñËØ³ß´ç
+f6 = figure(6);
+set(f6, 'position', SIZE);	% ÉèÖÃÍ¼ĞÎ´°¿ÚÎ»ÖÃ³ß´çÎªÆÁÄ»´óĞ¡
 
 for i = 1:3
     factor = data(:,sel_set{i});
     % ANOVA
-    anova1(factor, category);
+    anova1(factor, category, 'off');
+    subplot(1,3,i)
+    boxplot(factor,category,'Labels',{'Àà±ğ1','Àà±ğ2','Àà±ğ3','Àà±ğ4','Àà±ğ5'})
+    set(get(gca, 'XLabel'), 'String', 'Èº×éÀà±ğ');
+    set(get(gca, 'YLabel'), 'String', sel_name{i});
+    set(gca, 'FontSize', 22)
 end
+
+print(f6,'-dpng','-r300','./image/factor_boxplot.png');
 
 %simple  sampling
 
